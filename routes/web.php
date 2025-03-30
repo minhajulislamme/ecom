@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,11 +27,14 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     })->name('user.dashboard');
 });
 
-// Admin Routes
+// Admin All Routes
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('backend.admin');
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [AdminController::class, 'AdminDashboard'])->name('admin.dashboard');
+    Route::get('/admin/logout', [AdminController::class, 'AdminLogout'])->name('admin.logout');
+    Route::get('/admin/profile', [AdminController::class, 'AdminProfile'])->name('admin.profile');
+    Route::post('/admin/profile/update', [AdminController::class, 'AdminProfileUpdate'])->name('admin.profile.update');
+    Route::get('/admin/password', [AdminController::class, 'AdminPassword'])->name('admin.password');
+    Route::post('/admin/password/update', [AdminController::class, 'AdminPasswordUpdate'])->name('admin.password.update');
 });
 // Super Admin Routes
 Route::middleware(['auth', 'verified', 'super_admin'])->group(function () {
@@ -38,3 +42,8 @@ Route::middleware(['auth', 'verified', 'super_admin'])->group(function () {
         return view('superadmin.superadmin');
     })->name('superadmin.dashboard');
 });
+
+
+// Admin Login Routes
+Route::get('/admin/login', [AdminController::class, 'AdminLogin'])->name('admin.login');
+Route::post('/admin/login/store', [AdminController::class, 'AdminLoginStore'])->name('admin.login.store');
