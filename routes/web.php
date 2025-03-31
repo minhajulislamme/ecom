@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Backend\Category\CategoryController;
 use App\Http\Controllers\Backend\Category\SubcategoryController;
+use App\Http\Controllers\Backend\Product\BackendProductController;
+use App\Http\Controllers\Backend\Product\ProductImageController;
+use App\Http\Controllers\Backend\Product\ProductVariationImageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // User Routes
 Route::middleware(['auth', 'verified', 'user'])->group(function () {
@@ -56,7 +59,42 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/subcategory/edit/{id}', 'SubCategoryEdit')->name('subcategory.edit');
         Route::post('/subcategory/update/{id}', 'SubCategoryUpdate')->name('subcategory.update');
         Route::get('/subcategory/delete/{id}', 'SubCategoryDelete')->name('subcategory.delete');
-        // Route::get('/get-subcategories/{category_id}', 'getSubcategories')->name('get.subcategories');
+        Route::get('/get-subcategories/{category_id}', 'getSubcategories')->name('get.subcategories');
+    });
+
+    // All Product Routes
+    Route::controller(BackendProductController::class)->group(function () {
+        Route::get('/product', 'index')->name('backend.products.index');
+        Route::get('/product/add', 'create')->name('backend.products.create');
+        Route::post('/product/store', 'store')->name('backend.products.store');
+        Route::get('/product/edit/{product}', 'edit')->name('backend.products.edit');
+        Route::put('/product/update/{product}', 'update')->name('backend.products.update');
+        Route::delete('/product/delete/{product}', 'destroy')->name('backend.products.destroy');
+
+        // Product Attributes
+        Route::post('/product/{product}/attributes', 'addAttribute')->name('backend.products.attributes.add');
+        Route::delete('/product/{product}/attributes/{attribute}', 'removeAttribute')->name('backend.products.attributes.remove');
+
+        // Product Variations
+        Route::get('/product/{product}/variations/create', 'createVariations')->name('backend.products.variations.create');
+        Route::post('/product/{product}/variations', 'storeVariations')->name('backend.products.variations.store');
+        Route::get('/product/{product}/variations/{variation}/edit', 'editVariation')->name('backend.products.variations.edit');
+        Route::put('/product/{product}/variations/{variation}', 'updateVariation')->name('backend.products.variations.update');
+        Route::delete('/product/{product}/variations/{variation}', 'removeVariation')->name('backend.products.variations.destroy');
+    });
+
+    // Product Images
+    Route::controller(ProductImageController::class)->group(function () {
+        Route::post('/product/{product}/images', 'store')->name('product.images.store');
+        Route::put('/product-images/{productImage}', 'update')->name('product.images.update');
+        Route::delete('/product-images/{productImage}', 'destroy')->name('product.images.destroy');
+    });
+
+    // Variation Images
+    Route::controller(ProductVariationImageController::class)->group(function () {
+        Route::post('/variations/{variation}/images', 'store')->name('variations.images.store');
+        Route::put('/variation-images/{variationImage}', 'update')->name('variations.images.update');
+        Route::delete('/variation-images/{variationImage}', 'destroy')->name('variations.images.destroy');
     });
 
     //end

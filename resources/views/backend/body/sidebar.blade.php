@@ -1,7 +1,9 @@
-<div class="fixed left-0 top-0 w-64 h-full bg-gray-900 p-4 z-50 sidebar-menu transition-transform duration-300 -translate-x-full lg:translate-x-0">
+<div
+    class="fixed left-0 top-0 w-64 h-full bg-gray-900 p-4 z-50 sidebar-menu transition-transform duration-300 -translate-x-full lg:translate-x-0">
     <a href="{{ route('admin.dashboard') }}" class="flex items-center pb-4 border-b border-b-gray-800">
-     <img src="{{ !empty(Auth::user()->photo) ? url('upload/admin_images/' . Auth::user()->photo) : url('https://placehold.co/600x600') }}" alt="" class="w-8 h-8 rounded object-cover">
-     <span class="text-lg font-bold text-white ml-3"> Admin </span>
+        <img src="{{ !empty(Auth::user()->photo) ? url('upload/admin_images/' . Auth::user()->photo) : url('https://placehold.co/600x600') }}"
+            alt="" class="w-8 h-8 rounded object-cover">
+        <span class="text-lg font-bold text-white ml-3"> Admin </span>
     </a>
     <ul class="mt-4">
         <li class="mb-1 group">
@@ -13,7 +15,7 @@
         </li>
 
         {{-- Products Menu --}}
-        {{-- <li class="mb-1 group {{ request()->is('product*') ? 'selected active' : '' }}">
+        <li class="mb-1 group {{ request()->is('product*') ? 'selected active' : '' }}">
             <a href="javascript:void()"
                 class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-800 hover:text-orange-500 rounded-md sidebar-link sidebar-dropdown-toggle {{ request()->is('product*') ? 'bg-gray-800 text-orange-500' : '' }}">
                 <i class="ri-shopping-bag-3-line mr-3 text-lg"></i>
@@ -22,21 +24,21 @@
             </a>
             <ul class="ml-7 mt-2 hidden group-[.selected]:block">
                 <li class="mb-4">
-                    <a href="{{ route('all.product') }}"
-                        class="text-gray-300 text-sm flex items-center hover:text-orange-500 sidebar-link {{ request()->routeIs('all.product') ? 'text-orange-500 active' : '' }}">
+                    <a href="{{ route('backend.products.index') }}"
+                        class="text-gray-300 text-sm flex items-center hover:text-orange-500 sidebar-link {{ request()->routeIs('backend.products.index') ? 'text-orange-500 active' : '' }}">
                         <span class="w-1 h-1 rounded-full bg-gray-300 mr-3"></span>
                         All Products
                     </a>
                 </li>
                 <li class="mb-4">
-                    <a href="{{ route('product.add') }}"
-                        class="text-gray-300 text-sm flex items-center hover:text-orange-500 sidebar-link {{ request()->routeIs('product.add') ? 'text-orange-500 active' : '' }}">
+                    <a href="{{ route('backend.products.create') }}"
+                        class="text-gray-300 text-sm flex items-center hover:text-orange-500 sidebar-link {{ request()->routeIs('backend.products.create') ? 'text-orange-500 active' : '' }}">
                         <span class="w-1 h-1 rounded-full bg-gray-300 mr-3"></span>
                         Add Product
                     </a>
                 </li>
             </ul>
-        </li> --}}
+        </li>
 
         <li
             class="mb-1 group {{ request()->is('category*') || request()->is('subcategory*') ? 'selected active' : '' }}">
@@ -299,5 +301,6 @@
             </ul>
         </li> --}}
     </ul>
- </div>
- <div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay hidden transition-all-smooth"></div>
+</div>
+<div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay hidden transition-all-smooth">
+</div>

@@ -12,29 +12,27 @@ class SubcategoryController extends Controller
     public function AllSubCategory()
     {
 
-            $subcategories = SubCategory::with(['category' => function ($query) {
-                $query->select('id', 'category_name', 'status');
-            }])
-                ->whereHas('category', function ($query) {
-                    $query->where('status', 'active');
-                })
-                ->select('id', 'category_id', 'subcategory_name', 'subcategory_slug', 'status')
-                ->latest()
-                ->get();
+        $subcategories = SubCategory::with(['category' => function ($query) {
+            $query->select('id', 'category_name', 'status');
+        }])
+            ->whereHas('category', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->select('id', 'category_id', 'subcategory_name', 'subcategory_slug', 'status')
+            ->latest()
+            ->get();
 
-            return view('backend.category.all_sub_category', compact('subcategories'));
-
+        return view('backend.category.all_sub_category', compact('subcategories'));
     }
     public function SubCategoryAdd()
     {
 
-            $categories = Category::where('status', 'active')
-                ->select('id', 'category_name')
-                ->orderBy('category_name')
-                ->get();
+        $categories = Category::where('status', 'active')
+            ->select('id', 'category_name')
+            ->orderBy('category_name')
+            ->get();
 
-            return view('backend.category.add_sub_category', compact('categories'));
-
+        return view('backend.category.add_sub_category', compact('categories'));
     }
 
     public function SubCategoryStore(Request $request)
@@ -55,17 +53,16 @@ class SubcategoryController extends Controller
         ]);
 
 
-            SubCategory::create([
-                'category_id' => $request->category_id,
-                'subcategory_name' => trim($request->subcategory_name),
-                'subcategory_slug' => strtolower(str_replace(' ', '-', $request->subcategory_name)),
-                'status' => 'active'
-            ]);
+        SubCategory::create([
+            'category_id' => $request->category_id,
+            'subcategory_name' => trim($request->subcategory_name),
+            'subcategory_slug' => strtolower(str_replace(' ', '-', $request->subcategory_name)),
+            'status' => 'active'
+        ]);
 
-            return redirect()
-                ->route('all.subcategory')
-                ->with('success', 'Subcategory Added Successfully');
-
+        return redirect()
+            ->route('all.subcategory')
+            ->with('success', 'Subcategory Added Successfully');
     }
 
     public function SubCategoryEdit($id)
@@ -95,43 +92,52 @@ class SubcategoryController extends Controller
         ]);
 
 
-            $subcategory->update([
-                'category_id' => $request->category_id,
-                'subcategory_name' => trim($request->subcategory_name),
-                'subcategory_slug' => strtolower(str_replace(' ', '-', $request->subcategory_name)),
-                'status' => $request->status,
-            ]);
+        $subcategory->update([
+            'category_id' => $request->category_id,
+            'subcategory_name' => trim($request->subcategory_name),
+            'subcategory_slug' => strtolower(str_replace(' ', '-', $request->subcategory_name)),
+            'status' => $request->status,
+        ]);
 
-            $notification = [
-                'message' => 'Subcategory Updated Successfully',
-                'alert-type' => 'success'
-            ];
+        $notification = [
+            'message' => 'Subcategory Updated Successfully',
+            'alert-type' => 'success'
+        ];
 
-            return redirect()
-                ->route('all.subcategory')
-                ->with($notification);
-
+        return redirect()
+            ->route('all.subcategory')
+            ->with($notification);
     }
     public function SubCategoryDelete($id)
     {
 
-            $subcategory = SubCategory::findOrFail($id);
+        $subcategory = SubCategory::findOrFail($id);
 
-            // Check if subcategory has related products
-            // if ($subcategory->products()->exists()) {
-            //     return back()->with('error', 'Cannot delete subcategory with associated products');
-            // }
+        // Check if subcategory has related products
+        // if ($subcategory->products()->exists()) {
+        //     return back()->with('error', 'Cannot delete subcategory with associated products');
+        // }
 
-            $subcategory->delete();
-            $notification = [
-                'message' => 'Subcategory Deleted Successfully',
-                'alert-type' => 'success'
-            ];
-            return redirect()
-                ->route('all.subcategory')
-                ->with($notification);
-
+        $subcategory->delete();
+        $notification = [
+            'message' => 'Subcategory Deleted Successfully',
+            'alert-type' => 'success'
+        ];
+        return redirect()
+            ->route('all.subcategory')
+            ->with($notification);
     }
 
+    /**
+     * Get subcategories by category ID for AJAX request
+     */
+    public function getSubcategories($category_id)
+    {
+        $subcategories = SubCategory::where('category_id', $category_id)
+            ->where('status', 'active')
+            ->select('id', 'subcategory_name')
+            ->get();
 
+        return response()->json($subcategories);
+    }
 }
