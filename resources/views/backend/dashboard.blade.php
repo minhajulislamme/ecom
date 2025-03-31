@@ -11,11 +11,11 @@
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./dist/css/style.css">
       <!-- Styles / Scripts -->
-      
-      @vite(['resources/css/backend/app.css', 'resources/js/backend/app.js'])
- 
 
- 
+      @vite(['resources/css/backend/app.css', 'resources/js/backend/app.js'])
+
+
+
 </head>
 <body class="text-gray-900 font-inter">
    <!-- =========================================================Sider bar Start==================================== -->
@@ -27,7 +27,7 @@
         <!-- =========================================================Main Content Start==================================== -->
        @yield('backend_content')
     <!-- footer part -->
-          
+
         @include('backend.body.footer')
         <!-- =========================================================Main Content End==================================== -->
     </main>
@@ -35,15 +35,16 @@
     <!-- footer part -->
 
     <!-- =========================================================== script js==================================== -->
-   
+
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{asset('backend/js/app.js')}}"></script>
-    
-   
+    <script src="{{asset('backend/js/image.js')}}"></script>
+
+
      <script>
          $(document).ready(function() {
             $('#summernote').summernote({
@@ -58,7 +59,7 @@
                 ]
             });
         });
-     
+
 
         @if (Session::has('message'))
     Swal.fire({
