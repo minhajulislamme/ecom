@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Backend\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ProductVariation;
+use App\Models\ProductVariationImage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductVariationImageController extends Controller
 {
@@ -19,8 +22,27 @@ class ProductVariationImageController extends Controller
             'alt_text' => 'nullable|string|max:255',
         ]);
 
-        // Handle file upload
-        $path = $request->file('image')->store('variations', 'public');
+        // Process and convert image to WebP format using Intervention Image
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($request->file('image'));
+
+        // Create variations directory if it doesn't exist
+        $variationsPath = public_path('variations');
+        if (!file_exists($variationsPath)) {
+            mkdir($variationsPath, 0755, true);
+        }
+
+        // Generate a unique filename with webp extension
+        $filename = uniqid() . '.webp';
+        $filePath = 'variations/' . $filename;
+        $fullPath = public_path($filePath);
+
+        // Convert and save image to webp format with 80% quality
+        $encodedImage = $image->toWebp(80);
+        file_put_contents($fullPath, $encodedImage);
+
+        // Path for database storage
+        $path = $filePath;
 
         // Set as primary if requested or if it's the first image
         $isPrimary = $request->has('is_primary') ? $request->is_primary : !$variation->images()->exists();
@@ -105,8 +127,11 @@ class ProductVariationImageController extends Controller
         // Check if this is the primary image
         $isPrimary = $variationImage->is_primary;
 
-        // Delete the image from storage
-        Storage::disk('public')->delete($variationImage->image_path);
+        // Delete the image from storage using direct file operations
+        $fullPath = public_path($variationImage->image_path);
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
+        }
 
         // Delete from database
         $variationImage->delete();

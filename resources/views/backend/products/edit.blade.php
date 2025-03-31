@@ -100,7 +100,7 @@
                         <span>Current Main Image</span>
                     </label>
                     @if ($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
                             class="w-32 h-32 object-cover rounded mb-2">
                     @else
                         <p class="text-gray-500">No main image</p>

@@ -12,8 +12,9 @@ use App\Models\ProductVariation;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class BackendProductController extends Controller
 {
@@ -68,30 +69,55 @@ class BackendProductController extends Controller
                 'status' => $validated['status'],
             ]);
 
+            // Setup image manager
+            $manager = new ImageManager(new Driver());
+
+            // Create products directory if it doesn't exist
+            $productsPath = public_path('products');
+            if (!file_exists($productsPath)) {
+                mkdir($productsPath, 0755, true);
+            }
+
             // Handle main product image
             if ($request->hasFile('main_image')) {
-                $path = $request->file('main_image')->store('products', 'public');
+                // Process and convert image to WebP format
+                $image = $manager->read($request->file('main_image'));
+                $filename = uniqid() . '.webp';
+                $filePath = 'products/' . $filename;
+                $fullPath = public_path($filePath);
+
+                // Convert and save image to webp format with 80% quality
+                $encodedImage = $image->toWebp(80);
+                file_put_contents($fullPath, $encodedImage);
 
                 // Create a primary image record
                 $product->images()->create([
-                    'image_path' => $path,
+                    'image_path' => $filePath,
                     'is_primary' => true,
                     'sort_order' => 0,
                     'alt_text' => $product->name,
                 ]);
 
                 // Also update the product image field for backwards compatibility
-                $product->update(['image' => $path]);
+                $product->update(['image' => $filePath]);
             }
 
             // Handle gallery images
             if ($request->hasFile('gallery_images')) {
                 $sortOrder = 1; // Start at 1 since main image is 0
                 foreach ($request->file('gallery_images') as $galleryImage) {
-                    $path = $galleryImage->store('products', 'public');
+                    // Process and convert image to WebP format
+                    $image = $manager->read($galleryImage);
+                    $filename = uniqid() . '.webp';
+                    $filePath = 'products/' . $filename;
+                    $fullPath = public_path($filePath);
+
+                    // Convert and save image to webp format with 80% quality
+                    $encodedImage = $image->toWebp(80);
+                    file_put_contents($fullPath, $encodedImage);
 
                     $product->images()->create([
-                        'image_path' => $path,
+                        'image_path' => $filePath,
                         'is_primary' => false,
                         'sort_order' => $sortOrder++,
                         'alt_text' => $product->name . ' image ' . $sortOrder,
@@ -163,23 +189,40 @@ class BackendProductController extends Controller
                 'status' => $validated['status'],
             ]);
 
+            // Setup image manager
+            $manager = new ImageManager(new Driver());
+
+            // Create products directory if it doesn't exist
+            $productsPath = public_path('products');
+            if (!file_exists($productsPath)) {
+                mkdir($productsPath, 0755, true);
+            }
+
             // Handle main product image
             if ($request->hasFile('main_image')) {
-                $path = $request->file('main_image')->store('products', 'public');
+                // Process and convert image to WebP format
+                $image = $manager->read($request->file('main_image'));
+                $filename = uniqid() . '.webp';
+                $filePath = 'products/' . $filename;
+                $fullPath = public_path($filePath);
+
+                // Convert and save image to webp format with 80% quality
+                $encodedImage = $image->toWebp(80);
+                file_put_contents($fullPath, $encodedImage);
 
                 // Remove old primary image designation
                 $product->images()->where('is_primary', true)->update(['is_primary' => false]);
 
                 // Create a new primary image record
                 $product->images()->create([
-                    'image_path' => $path,
+                    'image_path' => $filePath,
                     'is_primary' => true,
                     'sort_order' => 0,
                     'alt_text' => $product->name,
                 ]);
 
                 // Also update the product image field for backwards compatibility
-                $product->update(['image' => $path]);
+                $product->update(['image' => $filePath]);
             }
 
             // Handle gallery images
@@ -189,10 +232,18 @@ class BackendProductController extends Controller
                 $sortOrder = $maxSortOrder + 1;
 
                 foreach ($request->file('gallery_images') as $galleryImage) {
-                    $path = $galleryImage->store('products', 'public');
+                    // Process and convert image to WebP format
+                    $image = $manager->read($galleryImage);
+                    $filename = uniqid() . '.webp';
+                    $filePath = 'products/' . $filename;
+                    $fullPath = public_path($filePath);
+
+                    // Convert and save image to webp format with 80% quality
+                    $encodedImage = $image->toWebp(80);
+                    file_put_contents($fullPath, $encodedImage);
 
                     $product->images()->create([
-                        'image_path' => $path,
+                        'image_path' => $filePath,
                         'is_primary' => false,
                         'sort_order' => $sortOrder++,
                         'alt_text' => $product->name . ' image ' . $sortOrder,
@@ -217,14 +268,20 @@ class BackendProductController extends Controller
     {
         // Delete all associated images from storage
         foreach ($product->images as $image) {
-            Storage::disk('public')->delete($image->image_path);
+            $fullPath = public_path($image->image_path);
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
         }
 
         // Delete variation images and clean up product_variation_attribute_values
         foreach ($product->variations as $variation) {
             // Delete variation images
             foreach ($variation->images as $image) {
-                Storage::disk('public')->delete($image->image_path);
+                $fullPath = public_path($image->image_path);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
             }
 
             // Explicitly detach attribute values to clean pivot table
@@ -437,22 +494,42 @@ class BackendProductController extends Controller
                     ->update(['is_default' => false]);
             }
 
+            // Setup image manager
+            $manager = new ImageManager(new Driver());
+
+            // Create variations directory if it doesn't exist
+            $variationsPath = public_path('variations');
+            if (!file_exists($variationsPath)) {
+                mkdir($variationsPath, 0755, true);
+            }
+
             // Handle image upload
             if ($request->hasFile('image')) {
                 // Delete the old image if it exists
-                if ($variation->image && Storage::disk('public')->exists($variation->image)) {
-                    Storage::disk('public')->delete($variation->image);
+                if ($variation->image) {
+                    $oldImagePath = public_path($variation->image);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
                 }
 
-                // Store the new image
-                $path = $request->file('image')->store('variations', 'public');
-                $updateData['image'] = $path;
+                // Process and convert image to WebP format
+                $image = $manager->read($request->file('image'));
+                $filename = uniqid() . '.webp';
+                $filePath = 'variations/' . $filename;
+                $fullPath = public_path($filePath);
+
+                // Convert and save image to webp format with 80% quality
+                $encodedImage = $image->toWebp(80);
+                file_put_contents($fullPath, $encodedImage);
+
+                $updateData['image'] = $filePath;
 
                 // Create or update variation primary image record
                 $variation->images()->updateOrCreate(
                     ['is_primary' => true],
                     [
-                        'image_path' => $path,
+                        'image_path' => $filePath,
                         'sort_order' => 0,
                         'alt_text' => $product->name . ' ' . $validated['sku']
                     ]
@@ -460,8 +537,12 @@ class BackendProductController extends Controller
             }
             // Handle image removal if requested
             else if ($request->has('remove_image') && $variation->image) {
-                // Delete the file from storage
-                Storage::disk('public')->delete($variation->image);
+                // Delete the file from storage using direct file operations
+                $oldImagePath = public_path($variation->image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+
                 $updateData['image'] = null;
 
                 // Remove primary image designation
@@ -501,7 +582,7 @@ class BackendProductController extends Controller
         try {
             // Delete variation images from storage
             foreach ($variation->images as $image) {
-                Storage::disk('public')->delete($image->image_path);
+                unlink(public_path($image->image_path));
             }
 
             // Detach attribute values to clean pivot table
