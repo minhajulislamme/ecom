@@ -9,8 +9,15 @@ use App\Http\Controllers\Backend\Product\BackendProductController;
 use App\Http\Controllers\Backend\Product\ProductImageController;
 use App\Http\Controllers\Backend\Product\ProductVariationImageController;
 
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('frontend.index');
+});
+Route::get('/product/details', function () {
+    return view('frontend.products.productdetails');
 });
 
 // Route::get('/dashboard', function () {

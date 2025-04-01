@@ -122,7 +122,7 @@
                     <div class="flex flex-wrap gap-2 mb-2">
                         @foreach ($product->images->where('is_primary', false) as $image)
                             <div class="relative">
-                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="Gallery image"
+                                <img src="{{ asset($image->image_path) }}" alt="Gallery image"
                                     class="w-24 h-24 object-cover rounded">
                             </div>
                         @endforeach
