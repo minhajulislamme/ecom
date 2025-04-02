@@ -17,12 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
             swiper: thumbsSwiper
         },
     });
+
+    // Initialize tabs
+    switchTab('description');
 });
 
 function updateQuantityUI(value) {
     const input = document.getElementById('quantity');
     const stockCount = document.getElementById('stockCount');
-    const maxStock = 12;
+    const maxStock = parseInt(input.getAttribute('max'));
     
     input.value = value;
     stockCount.textContent = maxStock - value;
@@ -40,7 +43,9 @@ function updateQuantityUI(value) {
 function incrementQuantity() {
     const input = document.getElementById('quantity');
     const currentValue = parseInt(input.value);
-    if (currentValue < 12) {
+    const maxValue = parseInt(input.getAttribute('max'));
+    
+    if (currentValue < maxValue) {
         updateQuantityUI(currentValue + 1);
     }
 }
@@ -48,67 +53,79 @@ function incrementQuantity() {
 function decrementQuantity() {
     const input = document.getElementById('quantity');
     const currentValue = parseInt(input.value);
+    
     if (currentValue > 1) {
         updateQuantityUI(currentValue - 1);
     }
 }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    updateQuantityUI(1);
-});
-
-// Prevent manual input
 document.getElementById('quantity').addEventListener('keydown', (e) => {
     e.preventDefault();
 });
 
+function switchTab(tabId) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // Reset all tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-orange-500');
+        btn.querySelector('span').style.transform = 'scaleX(0)';
+    });
+    
+    // Show the selected tab
+    document.getElementById(tabId).classList.remove('hidden');
+    
+    // Activate the tab button
+    document.getElementById(tabId + 'Tab').classList.add('text-orange-500');
+    document.getElementById(tabId + 'Tab').querySelector('span').style.transform = 'scaleX(1)';
+}
+
+function setRating(rating) {
+    // Update the stars visually
+    document.querySelectorAll('.rating-star').forEach((star, index) => {
+        if (index < rating) {
+            star.classList.remove('text-gray-400');
+            star.classList.add('text-yellow-400');
+        } else {
+            star.classList.remove('text-yellow-400');
+            star.classList.add('text-gray-400');
+        }
+    });
+    
+    // You could add a hidden input to store the rating
+    if (!document.getElementById('review-rating')) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.id = 'review-rating';
+        input.name = 'rating';
+        input.value = rating;
+        document.querySelector('form').appendChild(input);
+    } else {
+        document.getElementById('review-rating').value = rating;
+    }
+}
+
 function openVideoModal() {
-const modal = document.getElementById('videoModal');
-modal.classList.remove('hidden');
+    const modal = document.getElementById('videoModal');
+    modal.classList.remove('hidden');
 }
 
 function closeVideoModal() {
-const modal = document.getElementById('videoModal');
-const iframe = document.getElementById('youtubeVideo');
-// Reset iframe by reloading it
-iframe.src = iframe.src;
-modal.classList.add('hidden');
+    const modal = document.getElementById('videoModal');
+    const iframe = document.getElementById('youtubeVideo');
+    // Reset iframe by reloading it
+    iframe.src = iframe.src;
+    modal.classList.add('hidden');
 }
 
 // Close modal on background click
-document.getElementById('videoModal').addEventListener('click', function(e) {
-if (e.target === this) {
-    closeVideoModal();
-}
-});
-
-function switchTab(tabId) {
-    // Get all tab buttons and content
-    const tabs = document.querySelectorAll('.tab-btn');
-    const contents = document.querySelectorAll('.tab-content');
-    
-    // Hide all contents first
-    contents.forEach(content => content.classList.add('hidden'));
-    
-    // Reset all tabs
-    tabs.forEach(tab => {
-        tab.classList.remove('text-orange-500');
-        tab.classList.add('text-gray-500');
-        tab.querySelector('span').style.transform = 'scaleX(0)';
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('videoModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeVideoModal();
+        }
     });
-    
-    // Show selected content
-    document.getElementById(tabId).classList.remove('hidden');
-    
-    // Activate selected tab
-    const activeTab = document.getElementById(tabId + 'Tab');
-    activeTab.classList.remove('text-gray-500');
-    activeTab.classList.add('text-orange-500');
-    activeTab.querySelector('span').style.transform = 'scaleX(1)';
-}
-
-// Ensure description tab is active on page load
-document.addEventListener('DOMContentLoaded', () => {
-    switchTab('description');
 });

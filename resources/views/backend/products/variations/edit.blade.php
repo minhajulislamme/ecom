@@ -98,9 +98,9 @@
                         <span>Variation Image</span>
                     </label>
 
-                    @if ($variation->image)
+                    @if ($variation->image_path)
                         <div class="mb-3">
-                            <img src="{{ asset('storage/' . $variation->image) }}" alt="{{ $product->name }} variation"
+                            <img src="{{ asset($variation->image_path) }}" alt="{{ $product->name }} variation"
                                 class="w-32 h-32 object-cover rounded">
                             <div class="mt-2">
                                 <label class="flex items-center">

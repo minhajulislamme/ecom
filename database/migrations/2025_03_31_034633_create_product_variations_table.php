@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('sku')->nullable();
             $table->decimal('price', 10, 2);
             $table->integer('stock_quantity')->default(0);
+            $table->string('image')->nullable();
             $table->boolean('is_default')->default(false);
             $table->timestamps();
 

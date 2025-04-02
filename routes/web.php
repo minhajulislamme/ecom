@@ -8,21 +8,32 @@ use App\Http\Controllers\Backend\Category\SubcategoryController;
 use App\Http\Controllers\Backend\Product\BackendProductController;
 use App\Http\Controllers\Backend\Product\ProductImageController;
 use App\Http\Controllers\Backend\Product\ProductVariationImageController;
+use App\Http\Controllers\Frontend\Home\HomeController;
+use App\Http\Controllers\Frontend\Home\ProductDetailsController;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
 
-Route::get('/', function () {
-    return view('frontend.index');
-});
-Route::get('/product/details', function () {
-    return view('frontend.products.productdetails');
-});
+// Route::get('/', function () {
+//     return view('frontend.index');
+// });
+// Route::get('/product/details', function () {
+//     return view('frontend.products.productdetails');
+// });
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
+
+
+// For frontend routes
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+//product details route
+Route::get('/product-details/{id}/{slug}', [ProductDetailsController::class, 'ProductDetails'])->name('product.details');
+Route::post('/product-variation', [ProductDetailsController::class, 'getProductVariation'])->name('product.variation');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

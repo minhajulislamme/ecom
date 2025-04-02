@@ -17,14 +17,14 @@ class ProductVariationImageController extends Controller
     public function store(Request $request, ProductVariation $variation)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_primary' => 'boolean',
             'alt_text' => 'nullable|string|max:255',
         ]);
 
         // Process and convert image to WebP format using Intervention Image
         $manager = new ImageManager(new Driver());
-        $image = $manager->read($request->file('image'));
+        $image = $manager->read($request->file('image_path'));
 
         // Create variations directory if it doesn't exist
         $variationsPath = public_path('variations');
