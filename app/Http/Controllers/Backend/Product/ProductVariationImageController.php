@@ -27,14 +27,14 @@ class ProductVariationImageController extends Controller
         $image = $manager->read($request->file('image_path'));
 
         // Create variations directory if it doesn't exist
-        $variationsPath = public_path('variations');
+        $variationsPath = public_path('upload/variations');
         if (!file_exists($variationsPath)) {
             mkdir($variationsPath, 0755, true);
         }
 
         // Generate a unique filename with webp extension
         $filename = uniqid() . '.webp';
-        $filePath = 'variations/' . $filename;
+        $filePath = 'upload/variations/' . $filename;
         $fullPath = public_path($filePath);
 
         // Convert and save image to webp format with 80% quality

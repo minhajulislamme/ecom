@@ -11,10 +11,7 @@ class ProductAttributeValue extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'product_attribute_id',
-        'value',
-    ];
+    protected $guarded = [];
 
     /**
      * Get the attribute that owns the value.

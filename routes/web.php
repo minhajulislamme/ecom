@@ -11,6 +11,7 @@ use App\Http\Controllers\Backend\Product\ProductVariationImageController;
 use App\Http\Controllers\Frontend\Home\HomeController;
 use App\Http\Controllers\Frontend\Home\ProductDetailsController;
 
+
 // Route::get('/', function () {
 //     return view('welcome');
 // });

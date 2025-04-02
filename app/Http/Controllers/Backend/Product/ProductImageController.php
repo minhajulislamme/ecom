@@ -27,14 +27,14 @@ class ProductImageController extends Controller
         $image = $manager->read($request->file('image'));
 
         // Create products directory if it doesn't exist
-        $productsPath = public_path('products');
+        $productsPath = public_path('upload/products');
         if (!file_exists($productsPath)) {
             mkdir($productsPath, 0755, true);
         }
 
         // Generate a unique filename with webp extension
         $filename = uniqid() . '.webp';
-        $filePath = 'products/' . $filename;
+        $filePath = 'upload/products/' . $filename;
         $fullPath = public_path($filePath);
 
         // Convert and save image to webp format with 80% quality

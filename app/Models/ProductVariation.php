@@ -12,14 +12,7 @@ class ProductVariation extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'product_id',
-        'sku',
-        'price',
-        'stock_quantity',
-        'image',
-        'is_default',
-    ];
+    protected $guarded = [];
 
     /**
      * Get the product that owns the variation.

@@ -73,7 +73,7 @@ class BackendProductController extends Controller
             $manager = new ImageManager(new Driver());
 
             // Create products directory if it doesn't exist
-            $productsPath = public_path('products');
+            $productsPath = public_path('upload/products/');
             if (!file_exists($productsPath)) {
                 mkdir($productsPath, 0755, true);
             }
@@ -83,7 +83,7 @@ class BackendProductController extends Controller
                 // Process and convert image to WebP format
                 $image = $manager->read($request->file('main_image'));
                 $filename = uniqid() . '.webp';
-                $filePath = 'products/' . $filename;
+                $filePath = 'upload/products/' . $filename;
                 $fullPath = public_path($filePath);
 
                 // Convert and save image to webp format with 80% quality
@@ -109,7 +109,7 @@ class BackendProductController extends Controller
                     // Process and convert image to WebP format
                     $image = $manager->read($galleryImage);
                     $filename = uniqid() . '.webp';
-                    $filePath = 'products/' . $filename;
+                    $filePath = 'upload/products/' . $filename;
                     $fullPath = public_path($filePath);
 
                     // Convert and save image to webp format with 80% quality
@@ -193,7 +193,7 @@ class BackendProductController extends Controller
             $manager = new ImageManager(new Driver());
 
             // Create products directory if it doesn't exist
-            $productsPath = public_path('products');
+            $productsPath = public_path('upload/products/');
             if (!file_exists($productsPath)) {
                 mkdir($productsPath, 0755, true);
             }
@@ -203,7 +203,7 @@ class BackendProductController extends Controller
                 // Process and convert image to WebP format
                 $image = $manager->read($request->file('main_image'));
                 $filename = uniqid() . '.webp';
-                $filePath = 'products/' . $filename;
+                $filePath = 'upload/products/' . $filename;
                 $fullPath = public_path($filePath);
 
                 // Convert and save image to webp format with 80% quality
@@ -235,7 +235,7 @@ class BackendProductController extends Controller
                     // Process and convert image to WebP format
                     $image = $manager->read($galleryImage);
                     $filename = uniqid() . '.webp';
-                    $filePath = 'products/' . $filename;
+                    $filePath = 'upload/products/' . $filename;
                     $fullPath = public_path($filePath);
 
                     // Convert and save image to webp format with 80% quality
@@ -413,14 +413,31 @@ class BackendProductController extends Controller
 
                 // Handle variation image if uploaded
                 if (isset($variationData['image']) && $variationData['image'] instanceof \Illuminate\Http\UploadedFile) {
-                    $path = $variationData['image']->store('variations', 'public');
+                    // Setup image manager
+                    $manager = new ImageManager(new Driver());
+
+                    // Create variations directory if it doesn't exist
+                    $variationsPath = public_path('upload/variations');
+                    if (!file_exists($variationsPath)) {
+                        mkdir($variationsPath, 0755, true);
+                    }
+
+                    // Process and convert image to WebP format
+                    $image = $manager->read($variationData['image']);
+                    $filename = uniqid() . '.webp';
+                    $filePath = 'upload/variations/' . $filename;
+                    $fullPath = public_path($filePath);
+
+                    // Convert and save image to webp format with 80% quality
+                    $encodedImage = $image->toWebp(80);
+                    file_put_contents($fullPath, $encodedImage);
 
                     // Update the variation with the image path
-                    $variation->update(['image' => $path]);
+                    $variation->update(['image' => $filePath]);
 
                     // Create a variation image record
                     $variation->images()->create([
-                        'image_path' => $path,
+                        'image_path' => $filePath,
                         'is_primary' => true,
                         'sort_order' => 0,
                         'alt_text' => $product->name . ' ' . $variation->sku,
@@ -498,7 +515,7 @@ class BackendProductController extends Controller
             $manager = new ImageManager(new Driver());
 
             // Create variations directory if it doesn't exist
-            $variationsPath = public_path('variations');
+            $variationsPath = public_path('upload/variations');
             if (!file_exists($variationsPath)) {
                 mkdir($variationsPath, 0755, true);
             }
@@ -516,7 +533,7 @@ class BackendProductController extends Controller
                 // Process and convert image to WebP format
                 $image = $manager->read($request->file('image'));
                 $filename = uniqid() . '.webp';
-                $filePath = 'variations/' . $filename;
+                $filePath = 'upload/variations/' . $filename;
                 $fullPath = public_path($filePath);
 
                 // Convert and save image to webp format with 80% quality
